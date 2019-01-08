@@ -5,9 +5,55 @@ $(function() {
 let firstRequestFinished = false
 let currentUsers = []
 let albumIndex = {}
+let selectControl = {
+    start: null,
+    end: null,
+    table: null,
+}
 let dragControl = {
     dragTarget: null,
     dropTarget: null
+}
+
+let setupSelector = () => {
+    let rows = Array.from(document.getElementsByClassName('table__row'))
+    rows.map(row => {
+        row.removeEventListener('mouseup', rowClickEvent)
+        row.addEventListener('mouseup', rowClickEvent)
+    })
+}
+
+let rowClickEvent = function () {
+    let tableId = this.parentElement.id
+    let rows = Array.from(document.getElementsByClassName('table__row'))
+    if (selectControl.start === null) {
+        selectControl.start = this.id
+        this.classList.add('row__selected')
+        selectControl.table = tableId
+    } else if (selectControl.table === tableId &&
+      this.id >= selectControl.start) {
+        selectControl.end = this.id
+    } else {
+        clearSelected(rows)
+        rowClickEvent.bind(this)()
+    }
+    if (selectControl.start !== null && selectControl.end !== null) {
+        rows.map(row => {
+            if (row.parentElement.id === selectControl.table &&
+                row.id >= selectControl.start &&
+                row.id <= selectControl.end) {
+                row.classList.add('row__selected')
+            }
+        })
+    }
+}
+
+let clearSelected = rows => {
+    rows = rows ? rows : Array.from(document.getElementsByClassName('table__row'))
+    selectControl.start = selectControl.end = selectControl.table = null
+    rows.map(row => {
+        row.classList.remove('row__selected')
+    })
 }
 
 let setupFilter = () => {
@@ -78,6 +124,7 @@ let addAssociatedAlbumsToTable = (user, table) => {
                 addAlbumToTable(album, table)
                 albumIndex[album.id] = album
             })
+            setupSelector()
         }
     })
 }
@@ -142,6 +189,17 @@ let moveRow = (rowId, destinationId) => {
 }
 
 let finishDragEvent = (targetAlbum, targetUser) => {
+    if (selectControl.end === null) {
+        moveAlbum(targetAlbum, targetUser)
+    } else {
+        Array.from(document.getElementsByClassName('row__selected')).map(row => {
+            moveAlbum(row, targetUser)
+        })
+    }
+    clearSelected()
+}
+
+let moveAlbum = (targetAlbum, targetUser) => {
     $.ajax({
         url: `https://jsonplaceholder.typicode.com/albums/${targetAlbum.id}`,
         type: 'put',
