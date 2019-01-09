@@ -12,14 +12,17 @@ main {
 .search {
     padding-bottom: 30px;
 }
+
 .search__label {
     font-size: 18px;
     font-weight: bold;
 }
+
 .search__input {
     border: 1px solid #333;
     padding: 5px;
 }
+
 .search__button{
     background-color: white;
     display: inline-block;
@@ -41,16 +44,17 @@ main {
     width: 48%;
 }
 
-.table__header {
-    background-color: #333;
-    color: white;
-    font-weight: bold;
-}
-
-.table__row {
+.table__row, .table__header, .table__label, .table__filterbar, .table__beckoner {
+    align-items: center;
     border-bottom: 1px solid #333;
     display: flex;
     padding: 5px;
+}
+
+.table__header, .table__label, .table__filterbar, .table__beckoner {
+    background-color: #333;
+    color: white;
+    font-weight: bold;
 }
 
 .table__row:hover {
@@ -65,11 +69,6 @@ main {
         #dcd 10px,
         #dcd 20px
     );
-}
-
-.table__header:hover {
-    background: #333;
-    cursor: auto;
 }
 
 .table__row:last-child {
@@ -90,5 +89,17 @@ main {
 }
 
 .row__invisible {
+    display: none;
+}
+
+.table__beckoner {
+    display: none;
+}
+
+.table__beckoning > .table__beckoner {
+    display: block;
+}
+
+.table__beckoning > .table__filterbar {
     display: none;
 }
